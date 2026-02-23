@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+</head>
+<body>
+    <div class="card_authentification_user">
+        <l1 style="color: white; font-size:22px;">Регистрация</l1>
+            <form action="/submit" method = "post">
+                <div>
+                    <input type = "text" id = "name" name = "name" placeholder = "Имя пользователя" required>
+                </div>
+                <div>
+                    <input type = "password" id= "password" name = "password" placeholder="Пароль" required>
+                </div>
+                <div>
+                    <input type = "password" id = "password_two" placeholder= "Повторите пароль" required>
+                </div>
+                <div>
+                    <button class = "accept" type="submit">
+                        Зарегестрироваться
+                    </button>
+                </div>
+            </form>
+    </div>
+</body>
+</html>
+<style>
+    body{
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: purple;
+    }
+    .card_authentification_user{
+        padding: 80px;
+        padding-top:-15px;
+        border: 2px solid purple;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);  
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.3); 
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+    }
+    input{
+        width: 300px;
+        height: 30px;
+        border-radius: 10px;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(4px);  
+        -webkit-backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.2); 
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        color: white;
+    }
+    input::placeholder{
+        color: white
+    }
+    input:focus{
+        border-color:white;
+        outline: none;
+    }
+    .accept{
+        width: 170px;
+        height: 22px;
+        border-radius: 7px;
+        margin-top: 10px;
+        float: right;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(4px);  
+        -webkit-backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.2); 
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        color: white;
+    }
+</style>
