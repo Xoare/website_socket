@@ -30,21 +30,36 @@ class HTTPServer:
     
         """Обработка форм из POST запроса"""
     def processing_post_method(self, request_data):
-        if request_data.split(" ")[1] == "/submit":
+        if request_data.split(" ")[1] == "/register":
             try:
-                    body = request_data.split("\r\n\r\n")[1]
-                    params = body.split("&")
-                    data = {}
-                    for param in params:
-                        if "=" in param:
-                            key, value = param.split("=")
-                            data[key] = value
-                    name, password = data.get("name"), data.get("password")
-                    self.database.InsertUserId(name, password)
-                    return name, password
+                body = request_data.split("\r\n\r\n")[1]
+                params = body.split("&")
+                data = {}
+                for param in params:
+                    if "=" in param:
+                        key, value = param.split("=")
+                        data[key] = value
+                name, password = data.get("name"), data.get("password")
+                self.database.InsertUserId(name, password)
+                return name, password
             except:
                 return None, None
-
+            
+        if request_data.split(" ")[1] == "/submit":
+            try:
+                body = request_data.split("\r\n\r\n")[1]
+                params = body.split("&")
+                data = {}
+                for param in params:
+                    if "=" in param:
+                        key, value = param.split("=")
+                        data[key] = value
+                name, password = data.get("name"), data.get("password")
+                self.database.ExamenationUser(name, password)
+                return name, password
+            except:
+                return None, "Неверный логи или пароль"
+                
         """Чтение файла HTML"""
     def readHTMLstart(self, file_html):
         try:

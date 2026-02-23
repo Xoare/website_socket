@@ -29,5 +29,9 @@ class DataBase:
             print(f"ID: {row[0]}, Адрес: {row[1]}")
         print("============================================================================")
 
-    #def remove_database_user(self, client_id):
-        
+    def ExamenationUser(self, name, password):
+        examenation = self.cursor.execute("SELECT login, password FROM users WHERE login = ? AND password = ?", (name,password)).fetchone()
+        if examenation:
+            print("Вы успешно авторизировались")
+        else:
+            print("Неверный логин или пароль")
