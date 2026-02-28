@@ -7,6 +7,7 @@ class DataBase:
     def InitDataBase(self):
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS users(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             login TEXT,
             password TEXT)
             ''')
@@ -33,5 +34,7 @@ class DataBase:
         examenation = self.cursor.execute("SELECT login, password FROM users WHERE login = ? AND password = ?", (name,password)).fetchone()
         if examenation:
             print("Вы успешно авторизировались")
+            return True
         else:
             print("Неверный логин или пароль")
+            return False

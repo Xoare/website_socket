@@ -1,126 +1,367 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация</title>
-    <link rel="stylesheet" href="/CSS/authentification_user.css">
+    <title>Вход / Регистрация | Tattoo Master</title>
+    <!-- Подключение шрифтов -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #0b0b0b;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            color: #f0f0f0;
+            line-height: 1.6;
+            padding: 15px;
+        }
+
+        /* Фоновый эффект */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(201, 164, 108, 0.08) 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(201, 164, 108, 0.08) 0%, transparent 35%),
+                repeating-linear-gradient(45deg, rgba(201, 164, 108, 0.02) 0px, rgba(201, 164, 108, 0.02) 2px, transparent 2px, transparent 6px);
+            pointer-events: none;
+        }
+
+        .auth-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 460px; /* Немного уменьшил для лучшей читаемости */
+            margin: 0 auto;
+        }
+
+        /* ===== СТИЛИ КАРТОЧЕК ===== */
+        .card_authentification_user {
+            background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(201, 164, 108, 0.3);
+            border-radius: 30px;
+            box-shadow: 0 25px 40px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(201, 164, 108, 0.2) inset;
+            padding: 35px 30px;
+            transition: all 0.3s ease;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .title_card {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #c9a46c, #f3d8b0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            border-left: 5px solid #c9a46c;
+            padding-left: 15px;
+        }
+
+        /* Поля ввода */
+        .form-group {
+            margin-bottom: 16px; /* Ещё уменьшил */
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            color: #c9a46c;
+            font-size: 0.95rem;
+            opacity: 0.8;
+            z-index: 2;
+            width: 16px; /* Фиксированная ширина для иконки */
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px 12px 42px; /* Уменьшил отступы */
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(201, 164, 108, 0.3);
+            border-radius: 40px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            color: #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder {
+            color: #999;
+            font-weight: 300;
+            font-size: 0.85rem;
+        }
+
+        /* КОНТЕЙНЕР ДЛЯ КНОПОК */
+        .button-group {
+            display: flex;
+            gap: 10px; /* Уменьшил */
+            margin-top: 20px; /* Уменьшил */
+            width: 100%;
+        }
+
+        /* СТИЛЬ КНОПОК - ПОЛНОСТЬЮ ПЕРЕРАБОТАНО */
+        .accept {
+            flex: 1;
+            min-width: 0; /* Важно для flex */
+            background: linear-gradient(145deg, #c9a46c, #b48b54);
+            border: 1px solid #e6c7a0;
+            color: #0b0b0b;
+            font-weight: 600;
+            font-size: 0.85rem; /* Уменьшил шрифт */
+            padding: 10px 5px; /* Минимальные отступы */
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px; /* Минимальное межбуквенное расстояние */
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px; /* Минимальное расстояние между иконкой и текстом */
+            line-height: 1.1;
+            white-space: nowrap;
+            width: 100%;
+            word-break: keep-all; /* Запрещаем перенос слов */
+        }
+
+        .accept:hover {
+            background: linear-gradient(145deg, #dbb48b, #c9a46c);
+            box-shadow: 0 8px 15px rgba(201, 164, 108, 0.4);
+            color: #000;
+        }
+
+        /* Стиль для второстепенной кнопки */
+        .accept.secondary {
+            background: transparent;
+            color: #c9a46c;
+            border: 1px solid #c9a46c;
+            box-shadow: none;
+        }
+
+        .accept.secondary:hover {
+            background: rgba(201, 164, 108, 0.15);
+            color: #f3d8b0;
+            border-color: #f3d8b0;
+        }
+
+        /* Контейнер для текста кнопки */
+        .accept span {
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Если текст не влезает, добавляем многоточие */
+            white-space: nowrap;
+        }
+
+        /* Иконки внутри кнопок */
+        .accept i {
+            font-size: 0.8rem;
+            flex-shrink: 0; /* Запрещаем сжиматься */
+            width: 14px; /* Фиксированная ширина для иконок */
+            text-align: center;
+        }
+
+        /* Специально для длинного текста "Зарегистрироваться" */
+        .accept:last-child span {
+            font-size: 0.82rem; /* Чуть меньше для длинного слова */
+            letter-spacing: 0.3px;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 500px) {
+            .card_authentification_user {
+                padding: 20px 15px;
+            }
+            
+            .title_card {
+                font-size: 1.5rem;
+                padding-left: 10px;
+                margin-bottom: 15px;
+                border-left-width: 4px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 15px;
+            }
+            
+            .accept {
+                padding: 12px 8px;
+                font-size: 0.85rem;
+                white-space: normal; /* На мобильных разрешаем перенос */
+                min-height: 44px;
+            }
+            
+            .accept span {
+                white-space: normal;
+                text-overflow: clip;
+                text-align: center;
+            }
+            
+            .accept:last-child span {
+                font-size: 0.85rem; /* Возвращаем обычный размер на мобильных */
+            }
+            
+            input {
+                padding: 12px 12px 12px 40px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Для очень маленьких экранов */
+        @media (max-width: 360px) {
+            .accept {
+                font-size: 0.75rem;
+                padding: 10px 5px;
+            }
+            
+            .accept i {
+                font-size: 0.7rem;
+                width: 12px;
+            }
+            
+            .accept span {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Декоративный элемент */
+        .tattoo-signature {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            color: rgba(201, 164, 108, 0.2);
+            font-size: 0.7rem;
+            font-weight: 300;
+            letter-spacing: 1.5px;
+            transform: rotate(-2deg);
+            pointer-events: none;
+            z-index: 5;
+        }
+    </style>
 </head>
 <body>
-    <div class="card_authentification_user" id="card_reg" style="display: none;">
-        <l1 class="title_card">Регистрация</l1>
+    <div class="auth-container">
+        <!-- КАРТОЧКА РЕГИСТРАЦИИ -->
+        <div class="card_authentification_user" id="card_reg" style="display: none;">
+            <span class="title_card">Регистрация</span>
             <form action="/register" method="post">
-                <div>
-                    <input type="text" id="name_reg" name="name" placeholder="Имя пользователя" required>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="name_reg" name="name" placeholder="Имя пользователя" required>
+                    </div>
                 </div>
-                <div>
-                    <input type="password" id="password_reg" name="password" placeholder="Пароль" required>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password_reg" name="password" placeholder="Пароль" required>
+                    </div>
                 </div>
-                <div>
-                    <input type="password" id="password_two" placeholder="Повторите пароль" required>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-redo-alt input-icon"></i>
+                        <input type="password" id="password_two" placeholder="Повторите пароль" required>
+                    </div>
                 </div>
-                <div>
-                    <button class="accept" type="register">
-                        Зарегистрироваться
+                <div class="button-group">
+                    <button class="accept secondary" id="auth" type="button">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Есть аккаунт</span>
                     </button>
-                    <button class="accept" id="auth" style="width: 100px; float:left" type="button">
-                        Есть аккаунт
+                    <button class="accept" type="submit">
+                        <span>Зарегистрироваться</span>
+                        <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </form>
+        </div>
+
+        <!-- КАРТОЧКА АВТОРИЗАЦИИ -->
+        <div class="card_authentification_user" id="card_auth">
+            <span class="title_card">Авторизация</span>
+            <form action="/submit" method="post">
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="name_auth" name="name" placeholder="Имя пользователя" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password_auth" name="password" placeholder="Пароль" required>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="accept secondary" id="reg" type="button">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Нет аккаунта</span>
+                    </button>
+                    <button class="accept" type="submit">
+                        <span>Войти</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="card_authentification_user" id="card_auth">
-        <l1 class="title_card">Авторизация</l1>
-        <form action="/submit" method="post">
-            <div>
-                <input type="text" id="name_auth" name="name" placeholder="Имя пользователя" required>
-            </div>
-            <div>
-                <input type="password" id="password_auth" name="password" placeholder="Пароль" required>
-            </div>
-            <div>
-                <button class="accept" type="submit">
-                    Войти
-                </button>
-                <button class="accept" id="reg" style="width: 100px; float:left" type="button">
-                        Нет аккаунта
-                </button>
-            </div>
-        </form>
+
+    <!-- Подпись -->
+    <div class="tattoo-signature">
+        <i class="fas fa-skull"></i> INK·MASTER <i class="fas fa-crosshairs"></i>
     </div>
+
+    <script>
+        const registerForm = document.getElementById("card_reg");
+        const authForm = document.getElementById("card_auth");
+        const buttonReg = document.getElementById("reg");
+        const buttonAuth = document.getElementById("auth");
+
+        buttonReg.addEventListener("click", function() {
+            registerForm.style.display = "block";
+            authForm.style.display = "none";
+        });
+
+        buttonAuth.addEventListener("click", function() {
+            registerForm.style.display = "none";
+            authForm.style.display = "block";
+        });
+    </script>
 </body>
 </html>
-
-<style>
-    body{
-    height: 100vh;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: purple;
-}
-.card_authentification_user{
-    padding: 80px;
-    border: 2px solid purple;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);  
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3); 
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-
-}
-input{
-    width: 300px;
-    height: 30px;
-    border-radius: 10px;
-    margin-top: 10px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(4px);  
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.2); 
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    color: white;
-}
-input::placeholder{
-    color: white
-}
-input:focus{
-    border-color:white;
-    outline: none;
-}
-.accept{
-    width: 170px;
-    height: 22px;
-    border-radius: 7px;
-    margin-top: 10px;
-    float: right;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(4px);  
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.2); 
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    color: white;
-}
-.title_card{
-    color: white;
-    font-size:22px;
-}
-</style>
-
-<script>
-    const registerForm = document.getElementById("card_reg");
-    const authForm = document.getElementById("card_auth");
-    const buttonReg = document.getElementById("reg");
-    const buttonAuth = document.getElementById("auth");
-
-    buttonReg.addEventListener("click", function() {
-        registerForm.style.display = "block";
-        authForm.style.display = "none";
-    });
-
-    buttonAuth.addEventListener("click", function() {
-        registerForm.style.display = "none";
-        authForm.style.display = "block";
-    });
-</script>

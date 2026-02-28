@@ -2,7 +2,8 @@ import socket
 import sqlite3
 import random
 import os
-from SQLite3.database import DataBase as DB      
+from SQLite3.database import DataBase as DB 
+from python.session import Session as SESS     
 
 class HTTPServer:
     def __init__(self, host, port):
@@ -13,22 +14,27 @@ class HTTPServer:
         self.database = None
         self.templates_dir = "templates"
         
+    """Доступ к сайту"""
+    def home_page(self, headers, client_socket):
+        html_content = self.readHTMLstart("home.html")
+        if html_content:
+            client_socket.sendall(headers + html_content)
+            return True
+        return False
 
-        """Инициализация базы данных"""
+    """Инициализация базы данных"""
     def set_database(self, database):
         self.database = database
     
-        """Контроль методов HTTP"""
+    """Контроль методов HTTP"""
     def control_methods_http(self, request_data, client_address):
         print(client_address)
         response_method = request_data.splitlines()[0]
         if response_method.startswith("POST"):
             return self.processing_post_method(request_data)
         return None, None
-        #elif response_method == "GET":
-        #    self.processing_get_method()
     
-        """Обработка форм из POST запроса"""
+    """Обработка форм из POST запроса"""
     def processing_post_method(self, request_data):
         if request_data.split(" ")[1] == "/register":
             try:
@@ -41,26 +47,29 @@ class HTTPServer:
                         data[key] = value
                 name, password = data.get("name"), data.get("password")
                 self.database.InsertUserId(name, password)
-                return name, password
+                return "home", None
             except:
                 return None, None
             
         if request_data.split(" ")[1] == "/submit":
             try:
                 body = request_data.split("\r\n\r\n")[1]
-                params = body.split("&")
+                params = body.split("&")    
                 data = {}
                 for param in params:
                     if "=" in param:
                         key, value = param.split("=")
                         data[key] = value
                 name, password = data.get("name"), data.get("password")
-                self.database.ExamenationUser(name, password)
-                return name, password
+                result = self.database.ExamenationUser(name, password)
+                if result:
+                    return "home", None
+                else:
+                    return None, "Неверный логин или пароль"
             except:
-                return None, "Неверный логи или пароль"
+                return None, "Неверный логин или пароль"
                 
-        """Чтение файла HTML"""
+    """Чтение файла HTML"""
     def readHTMLstart(self, file_html):
         try:
            file_path = os.path.join(self.templates_dir, file_html)
@@ -73,7 +82,7 @@ class HTTPServer:
             print(f"Ошибка обработки файла: {ex}")
             pass
 
-            """Запуск сокета сервера"""
+    """Запуск сокета сервера"""
     def StartSocketServer(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -88,29 +97,28 @@ class HTTPServer:
                 client_socket, client_address = self.server_socket.accept()
                 try:
                     print(f"Установлено соединение с пользователем {client_address}")
-
                     
                     request_data = client_socket.recv(1024).decode('utf-8')
                     
                     if request_data:
                         print(request_data.splitlines()[0])
-                        name, password = self.control_methods_http(request_data, client_address)
-                        print(name, password)
+                        page_type, error = self.control_methods_http(request_data, client_address)
+                        print(page_type, error)
                     else:
                         print("Нет данных")
-
+                    
                     headers = (
                         b"HTTP/1.1 200 OK\r\n"
                         b"Content-Type: text/html; charset=utf-8\r\n"
                         b"Connection: close\r\n"
                         b"\r\n"
                     )
-
-                    html_content = self.readHTMLstart("authentification_user.html")        
-                    client_socket.sendall(headers + html_content)
-
-                    #if self.database:
-                    #    self.database.show_data_base()
+                    
+                    if page_type == "home":
+                        self.home_page(headers, client_socket)
+                    else:
+                        html_content = self.readHTMLstart("authentification_user.html")
+                        client_socket.sendall(headers + html_content)
                         
                 except Exception as ex:
                     print(f"Попытка соединения с пользователем {client_address} завершилась неудачно по причине {ex}")
@@ -127,7 +135,9 @@ if __name__ == "__main__":
     db_connection = sqlite3.connect('users.db')
     database = DB(db_connection)
     database.InitDataBase()
-    
+
+    session = SESS()
+
     server = HTTPServer('0.0.0.0', 8080)
     server.set_database(database)
     server.StartSocketServer()
