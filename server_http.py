@@ -3,7 +3,8 @@ import sqlite3
 import random
 import os
 from SQLite3.database import DataBase as DB 
-from python.session import Session as SESS     
+from python.session import Session as SESS
+import time    
 
 class HTTPServer:
     def __init__(self, host, port):
@@ -13,12 +14,13 @@ class HTTPServer:
         self.client_info = []
         self.database = None
         self.templates_dir = "templates"
-        
+    
     """Доступ к сайту"""
-    def home_page(self, headers, client_socket):
+    def home_page(self, headers, client_socket, name):
         html_content = self.readHTMLstart("home.html")
         if html_content:
             client_socket.sendall(headers + html_content)
+            SESS(self.database.db).create_session(name)
             return True
         return False
 
@@ -32,7 +34,7 @@ class HTTPServer:
         response_method = request_data.splitlines()[0]
         if response_method.startswith("POST"):
             return self.processing_post_method(request_data)
-        return None, None
+        return None, None, None
     
     """Обработка форм из POST запроса"""
     def processing_post_method(self, request_data):
@@ -47,9 +49,9 @@ class HTTPServer:
                         data[key] = value
                 name, password = data.get("name"), data.get("password")
                 self.database.InsertUserId(name, password)
-                return "home", None
+                return "home", None, name
             except:
-                return None, None
+                return None, None, None
             
         if request_data.split(" ")[1] == "/submit":
             try:
@@ -63,11 +65,11 @@ class HTTPServer:
                 name, password = data.get("name"), data.get("password")
                 result = self.database.ExamenationUser(name, password)
                 if result:
-                    return "home", None
+                    return "home", None, name
                 else:
-                    return None, "Неверный логин или пароль"
+                    return None, "Неверный логин или пароль", name
             except:
-                return None, "Неверный логин или пароль"
+                return None, "Неверный логин или пароль", None
                 
     """Чтение файла HTML"""
     def readHTMLstart(self, file_html):
@@ -102,7 +104,7 @@ class HTTPServer:
                     
                     if request_data:
                         print(request_data.splitlines()[0])
-                        page_type, error = self.control_methods_http(request_data, client_address)
+                        page_type, error, name = self.control_methods_http(request_data, client_address)
                         print(page_type, error)
                     else:
                         print("Нет данных")
@@ -115,11 +117,11 @@ class HTTPServer:
                     )
                     
                     if page_type == "home":
-                        self.home_page(headers, client_socket)
+                        self.home_page(headers, client_socket, name)
                     else:
                         html_content = self.readHTMLstart("authentification_user.html")
                         client_socket.sendall(headers + html_content)
-                        
+
                 except Exception as ex:
                     print(f"Попытка соединения с пользователем {client_address} завершилась неудачно по причине {ex}")
                 finally:
@@ -129,15 +131,18 @@ class HTTPServer:
         finally:
             if self.server_socket:
                 self.server_socket.close()
-    
+            if self.database:
+                self.database.db.close()
 
 if __name__ == "__main__":
     db_connection = sqlite3.connect('users.db')
     database = DB(db_connection)
     database.InitDataBase()
 
-    session = SESS()
-
     server = HTTPServer('0.0.0.0', 8080)
     server.set_database(database)
-    server.StartSocketServer()
+    
+    try:
+        server.StartSocketServer()
+    finally:
+        db_connection.close()
